@@ -11,21 +11,21 @@ import (
 func LabelRemovalDemo() {
 	fmt.Println("=== Label Removal Logging Demo ===")
 
-	// 设置日志级别以便看到警告信息
+	// Set log level to see warning messages
 	doris.SetLogLevel(doris.LogLevelInfo)
 
-	// 演示 1: 使用自定义 Label + Group Commit
-	fmt.Println("\n--- 演示 1: Custom Label + Group Commit ---")
+	// Demo 1: Custom Label + Group Commit
+	fmt.Println("\n--- Demo 1: Custom Label + Group Commit ---")
 	configWithLabel := &doris.Config{
 		Endpoints:   []string{"http://localhost:8630"},
 		User:        "root",
 		Password:    "password",
 		Database:    "test_db",
 		Table:       "test_table",
-		Label:       "my_custom_label_123", // 用户指定的自定义 label
+		Label:       "my_custom_label_123", // User-specified custom label
 		Format:      doris.DefaultJSONFormat(),
 		Retry:       doris.DefaultRetry(),
-		GroupCommit: doris.ASYNC, // 启用 group commit
+		GroupCommit: doris.ASYNC, // Enable group commit
 	}
 
 	client1, err := doris.NewLoadClient(configWithLabel)
@@ -35,24 +35,24 @@ func LabelRemovalDemo() {
 	}
 
 	testData := `{"id": 1, "name": "test"}`
-	fmt.Println("尝试加载数据，观察 label 删除日志...")
+	fmt.Println("Attempting to load data, observe label removal logs...")
 	_, err = client1.Load(strings.NewReader(testData))
 	if err != nil {
-		fmt.Printf("预期的连接错误（测试环境）: %v\n", err)
+		fmt.Printf("Expected connection error (test environment): %v\n", err)
 	}
 
-	// 演示 2: 使用 LabelPrefix + Group Commit
-	fmt.Println("\n--- 演示 2: Label Prefix + Group Commit ---")
+	// Demo 2: Label Prefix + Group Commit
+	fmt.Println("\n--- Demo 2: Label Prefix + Group Commit ---")
 	configWithPrefix := &doris.Config{
 		Endpoints:   []string{"http://localhost:8630"},
 		User:        "root",
 		Password:    "password",
 		Database:    "test_db",
 		Table:       "test_table",
-		LabelPrefix: "batch_load", // 用户指定的 label 前缀
+		LabelPrefix: "batch_load", // User-specified label prefix
 		Format:      doris.DefaultCSVFormat(),
 		Retry:       doris.DefaultRetry(),
-		GroupCommit: doris.SYNC, // 启用 group commit (SYNC 模式)
+		GroupCommit: doris.SYNC, // Enable group commit (SYNC mode)
 	}
 
 	client2, err := doris.NewLoadClient(configWithPrefix)
@@ -62,25 +62,25 @@ func LabelRemovalDemo() {
 	}
 
 	csvData := "1,Alice,30\n2,Bob,25"
-	fmt.Println("尝试加载数据，观察 label prefix 删除日志...")
+	fmt.Println("Attempting to load data, observe label prefix removal logs...")
 	_, err = client2.Load(strings.NewReader(csvData))
 	if err != nil {
-		fmt.Printf("预期的连接错误（测试环境）: %v\n", err)
+		fmt.Printf("Expected connection error (test environment): %v\n", err)
 	}
 
-	// 演示 3: 同时使用 Label 和 LabelPrefix + Group Commit
-	fmt.Println("\n--- 演示 3: Label + Label Prefix + Group Commit ---")
+	// Demo 3: Both Label and LabelPrefix + Group Commit
+	fmt.Println("\n--- Demo 3: Label + Label Prefix + Group Commit ---")
 	configWithBoth := &doris.Config{
 		Endpoints:   []string{"http://localhost:8630"},
 		User:        "root",
 		Password:    "password",
 		Database:    "test_db",
 		Table:       "test_table",
-		Label:       "specific_job_001", // 自定义 label
-		LabelPrefix: "production",       // label 前缀
+		Label:       "specific_job_001", // Custom label
+		LabelPrefix: "production",       // Label prefix
 		Format:      doris.DefaultJSONFormat(),
 		Retry:       doris.DefaultRetry(),
-		GroupCommit: doris.ASYNC, // 启用 group commit
+		GroupCommit: doris.ASYNC, // Enable group commit
 	}
 
 	client3, err := doris.NewLoadClient(configWithBoth)
@@ -90,14 +90,14 @@ func LabelRemovalDemo() {
 	}
 
 	jsonData := `{"id": 3, "name": "Charlie"}`
-	fmt.Println("尝试加载数据，观察两个 label 相关配置的删除日志...")
+	fmt.Println("Attempting to load data, observe removal logs for both label configurations...")
 	_, err = client3.Load(strings.NewReader(jsonData))
 	if err != nil {
-		fmt.Printf("预期的连接错误（测试环境）: %v\n", err)
+		fmt.Printf("Expected connection error (test environment): %v\n", err)
 	}
 
-	// 演示 4: 不启用 Group Commit 的正常情况
-	fmt.Println("\n--- 演示 4: 正常情况 (Group Commit 关闭) ---")
+	// Demo 4: Normal case without Group Commit
+	fmt.Println("\n--- Demo 4: Normal Case (Group Commit OFF) ---")
 	configNormal := &doris.Config{
 		Endpoints:   []string{"http://localhost:8630"},
 		User:        "root",
@@ -108,7 +108,7 @@ func LabelRemovalDemo() {
 		LabelPrefix: "normal_prefix",
 		Format:      doris.DefaultJSONFormat(),
 		Retry:       doris.DefaultRetry(),
-		GroupCommit: doris.OFF, // 关闭 group commit
+		GroupCommit: doris.OFF, // Group commit disabled
 	}
 
 	client4, err := doris.NewLoadClient(configNormal)
@@ -117,16 +117,16 @@ func LabelRemovalDemo() {
 		return
 	}
 
-	fmt.Println("尝试加载数据，观察正常的 label 生成日志...")
+	fmt.Println("Attempting to load data, observe normal label generation logs...")
 	_, err = client4.Load(strings.NewReader(testData))
 	if err != nil {
-		fmt.Printf("预期的连接错误（测试环境）: %v\n", err)
+		fmt.Printf("Expected connection error (test environment): %v\n", err)
 	}
 
-	fmt.Println("\n=== Demo 完成 ===")
-	fmt.Println("💡 注意: 以上演示了在启用 group commit 时的 label 删除日志功能")
-	fmt.Println("📋 日志级别说明:")
-	fmt.Println("   - WARN: 用户配置的 label/label_prefix 被删除的警告")
-	fmt.Println("   - INFO: Group commit 启用时的合规性删除操作")
-	fmt.Println("   - DEBUG: 正常的 label 生成过程")
+	fmt.Println("\n=== Demo Complete ===")
+	fmt.Println("💡 Note: The above demonstrated the label removal logging when group commit is enabled")
+	fmt.Println("📋 Log level descriptions:")
+	fmt.Println("   - WARN: Warning when user-configured label/label_prefix is removed")
+	fmt.Println("   - INFO: Compliance removal operation when group commit is enabled")
+	fmt.Println("   - DEBUG: Normal label generation process")
 }

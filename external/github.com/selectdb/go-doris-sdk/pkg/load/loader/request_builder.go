@@ -9,9 +9,9 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/selectdb/go-doris-sdk/pkg/load/config"
 	"github.com/selectdb/go-doris-sdk/pkg/load/log"
-	"github.com/google/uuid"
 )
 
 const (

@@ -13,7 +13,7 @@ import (
 
 const (
 	// Production-level JSON batch size
-	JSON_BATCH_SIZE = 50000 // 5万条JSON记录
+	JSON_BATCH_SIZE = 50000 // 50k JSON records
 )
 
 // RunJSONExample demonstrates production-level JSON data loading
@@ -29,7 +29,7 @@ func RunJSONExample() {
 	config := &doris.Config{
 		Endpoints:   []string{"http://10.16.10.6:8630"},
 		User:        "root",
-		Password:    "123456",
+		Password:    "",
 		Database:    "test",
 		Table:       "orders", // Unified orders table
 		LabelPrefix: "prod_json",

@@ -44,7 +44,8 @@ func (l Level) String() string {
 // Global logging configuration
 var (
 	// Current minimum log level
-	currentLevel = LevelDebug
+	// Default to INFO for security reasons (DEBUG may expose sensitive information like passwords)
+	currentLevel = LevelInfo
 
 	// Enhanced logger with custom formatter
 	stdLogger = log.New(os.Stdout, "", 0) // Remove default flags, we'll format ourselves

@@ -13,7 +13,7 @@ import (
 
 const (
 	// Production-level batch size - recommended for optimal performance
-	BATCH_SIZE = 100000 // 10万条记录
+	BATCH_SIZE = 100000 // 100k records
 )
 
 // RunSingleBatchExample demonstrates production-level single-threaded large batch loading
@@ -30,7 +30,7 @@ func RunSingleBatchExample() {
 	config := &doris.Config{
 		Endpoints:   []string{"http://10.16.10.6:8630"},
 		User:        "root",
-		Password:    "123456",
+		Password:    "",
 		Database:    "test",
 		Table:       "orders", // Unified orders table
 		LabelPrefix: "prod_batch",

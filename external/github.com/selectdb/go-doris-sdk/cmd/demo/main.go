@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	fmt.Println("Doris SDK - Format Interface 演示")
+	fmt.Println("Doris SDK - Format Interface Demonstration")
 
-	// ========== 演示 1: 使用 JSONFormat ==========
-	fmt.Println("\n=== 演示 1: JSON 格式配置 ===")
+	// ========== Demo 1: Using JSONFormat ==========
+	fmt.Println("\n=== Demo 1: JSON Format Configuration ===")
 
 	jsonConfig := &doris.Config{
 		Endpoints:   []string{"http://10.16.10.6:8630"},
@@ -19,7 +19,7 @@ func main() {
 		Database:    "test_db",
 		Table:       "test_table",
 		LabelPrefix: "json_demo",
-		// 用户直接构建 JSONFormat
+		// User directly constructs JSONFormat
 		Format:      &doris.JSONFormat{Type: doris.JSONObjectLine},
 		Retry:       doris.DefaultRetry(),
 		GroupCommit: doris.ASYNC,
@@ -31,8 +31,8 @@ func main() {
 	fmt.Printf("JSON Config Format Type: %s\n", jsonConfig.Format.GetFormatType())
 	fmt.Printf("JSON Format Options: %+v\n", jsonConfig.Format.GetOptions())
 
-	// ========== 演示 2: 使用 CSVFormat ==========
-	fmt.Println("\n=== 演示 2: CSV 格式配置 ===")
+	// ========== Demo 2: Using CSVFormat ==========
+	fmt.Println("\n=== Demo 2: CSV Format Configuration ===")
 
 	csvConfig := &doris.Config{
 		Endpoints:   []string{"http://10.16.10.6:8630"},
@@ -41,7 +41,7 @@ func main() {
 		Database:    "test_db",
 		Table:       "test_table",
 		LabelPrefix: "csv_demo",
-		// 用户直接构建 CSVFormat
+		// User directly constructs CSVFormat
 		Format: &doris.CSVFormat{
 			ColumnSeparator: ",",
 			LineDelimiter:   "\n",
@@ -56,8 +56,8 @@ func main() {
 	fmt.Printf("CSV Config Format Type: %s\n", csvConfig.Format.GetFormatType())
 	fmt.Printf("CSV Format Options: %+v\n", csvConfig.Format.GetOptions())
 
-	// ========== 演示 3: 其他 JSON 格式 ==========
-	fmt.Println("\n=== 演示 3: JSON Array 格式 ===")
+	// ========== Demo 3: Other JSON Formats ==========
+	fmt.Println("\n=== Demo 3: JSON Array Format ===")
 
 	jsonArrayConfig := &doris.Config{
 		Endpoints: []string{"http://10.16.10.6:8630"},
@@ -65,7 +65,7 @@ func main() {
 		Password:  "password",
 		Database:  "test_db",
 		Table:     "test_table",
-		// 直接构建 JSONFormat - Array 类型
+		// Directly construct JSONFormat - Array type
 		Format:      &doris.JSONFormat{Type: doris.JSONArray},
 		Retry:       &doris.Retry{MaxRetryTimes: 3, BaseIntervalMs: 2000},
 		GroupCommit: doris.OFF,
@@ -74,8 +74,8 @@ func main() {
 	fmt.Printf("JSON Array Format Type: %s\n", jsonArrayConfig.Format.GetFormatType())
 	fmt.Printf("JSON Array Format Options: %+v\n", jsonArrayConfig.Format.GetOptions())
 
-	// ========== 验证配置 ==========
-	fmt.Println("\n=== 配置验证 ===")
+	// ========== Configuration Validation ==========
+	fmt.Println("\n=== Configuration Validation ===")
 
 	configs := []*doris.Config{jsonConfig, csvConfig, jsonArrayConfig}
 	configNames := []string{"JSON ObjectLine Config", "CSV Config", "JSON Array Config"}
@@ -88,5 +88,5 @@ func main() {
 		}
 	}
 
-	fmt.Println("\n演示完成！")
+	fmt.Println("\nDemonstration complete!")
 }

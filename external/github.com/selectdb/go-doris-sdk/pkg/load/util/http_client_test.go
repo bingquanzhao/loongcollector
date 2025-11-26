@@ -13,9 +13,9 @@ import (
 // createTestClient creates an HTTP client with custom connection limits for testing
 func createTestClient(maxIdleConnsPerHost, maxConnsPerHost int) *http.Client {
 	transport := &http.Transport{
-		MaxIdleConnsPerHost: maxIdleConnsPerHost, // 空闲连接池大小，影响连接复用效率
-		MaxConnsPerHost:     maxConnsPerHost,     // 最大并发连接数，超出此数量会排队等待
-		MaxIdleConns:        50,                  // 全局空闲连接限制
+		MaxIdleConnsPerHost: maxIdleConnsPerHost, // Idle connection pool size, affects connection reuse efficiency
+		MaxConnsPerHost:     maxConnsPerHost,     // Maximum concurrent connections, excess will queue
+		MaxIdleConns:        50,                  // Global idle connection limit
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},

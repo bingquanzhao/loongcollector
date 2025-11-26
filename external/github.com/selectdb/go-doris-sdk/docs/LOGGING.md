@@ -7,7 +7,7 @@
 只需导入主包即可使用所有日志功能：
 
 ```go
-import doris "github.com/bingquanzhao/doris-stream-load-client"
+import doris "github.com/selectdb/doris-stream-load-client"
 
 func main() {
     // 设置日志级别

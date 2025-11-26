@@ -56,7 +56,7 @@ func RunBasicConcurrentExample() {
 	// Enhanced logging configuration
 	doris.SetLogLevel(doris.LogLevelInfo)
 
-	// 我们不能直接调用log.Infof，所以先创建一个context logger
+	// We can't directly call log.Infof, so create a context logger first
 	logger := doris.NewContextLogger("ConcurrentDemo")
 	logger.Infof("Starting concurrent loading demo with enhanced logging")
 
@@ -64,11 +64,11 @@ func RunBasicConcurrentExample() {
 	config := &doris.Config{
 		Endpoints:   []string{"http://10.16.10.6:8630"},
 		User:        "root",
-		Password:    "123456",
+		Password:    "",
 		Database:    "test",
 		Table:       "orders", // Unified orders table
 		LabelPrefix: "demo_concurrent",
-		Format:      doris.DefaultCSVFormat(), // 使用默认 CSV 格式
+		Format:      doris.DefaultCSVFormat(), // Use default CSV format
 		Retry:       doris.DefaultRetry(),     // 6 retries: [1s, 2s, 4s, 8s, 16s, 32s] = ~63s total
 		GroupCommit: doris.ASYNC,
 	}

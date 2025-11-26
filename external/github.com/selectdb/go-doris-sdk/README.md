@@ -1,29 +1,27 @@
 # 🚀 Doris Go SDK
 
 [![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.19-blue.svg)](https://golang.org/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Thread Safe](https://img.shields.io/badge/Thread%20Safe-✅-brightgreen.svg)](#-并发安全)
+[![Thread Safe](https://img.shields.io/badge/Thread%20Safe-✅-brightgreen.svg)](#-thread-safety)
 
-高性能、生产就绪的 Apache Doris Stream Load Go 客户端。简洁的 API 设计，强大的功能支持。
+A lightweight Apache Doris import client (Go version) with easy-to-use, high-performance, and production-ready features, continuously maintained by the Apache Doris core contributor team.
 
-## ✨ 主要特性
+## ✨ Key Features
 
-- 🎯 **简洁直观** - 直接构造配置，告别繁琐的链式调用
-- 🔄 **智能重试** - 双重限制（次数+时长）+ 指数退避算法
-- 📊 **多格式支持** - JSON Lines、JSON Array、CSV 等格式
-- ⚡ **高性能** - 优化的连接池 + 并发处理（50 并发连接）
-- 🛡️ **线程安全** - 客户端可安全地在多个 goroutine 间共享
-- 🔍 **详细日志** - 完整的请求追踪和错误诊断
-- 📈 **生产级** - 内置最佳实践，支持大规模数据加载
+**Easy to Use**: Provides a simple user experience with internal encapsulation of complex logic such as HTTP parameter configuration, multiple data format support, and intelligent retry mechanisms.
 
-## 📦 快速安装
+**High Performance**: Supports extremely high write throughput with built-in optimizations including efficient concurrency handling, and batch import practices.
+
+**Production Ready**: Validated in large-scale, high-pressure production environments with excellent full-chain observability.
+
+## 📦 Quick Installation
 
 ```bash
 go get github.com/selectdb/go-doris-sdk
 ```
 
+## 🚀 Quick Start
 
-### 基础 CSV 加载
+### Basic CSV Loading
 
 ```go
 package main
@@ -34,7 +32,7 @@ import (
 )
 
 func main() {
-	// 🎯 新版 API：直接构造配置
+	// 🎯 New API: Direct configuration construction
 	config := &doris.Config{
 		Endpoints:   []string{"http://127.0.0.1:8030"},
 		User:        "root",
@@ -46,28 +44,28 @@ func main() {
 		GroupCommit: doris.ASYNC,
 	}
 
-	// 创建客户端
+	// Create client
 	client, err := doris.NewLoadClient(config)
 	if err != nil {
 		panic(err)
 	}
 
-	// 加载数据
+	// Load data
 	data := "1,Alice,25\n2,Bob,30\n3,Charlie,35"
 	response, err := client.Load(doris.StringReader(data))
 	
 	if err != nil {
-		fmt.Printf("❌ 加载失败: %v\n", err)
+		fmt.Printf("❌ Load failed: %v\n", err)
 		return
 	}
 
 	if response.Status == doris.SUCCESS {
-		fmt.Printf("✅ 成功加载 %d 行数据！\n", response.Resp.NumberLoadedRows)
+		fmt.Printf("✅ Successfully loaded %d rows!\n", response.Resp.NumberLoadedRows)
 	}
 }
 ```
-
-### JSON 数据加载
+[
+### JSON Data Loading
 
 ```go
 config := &doris.Config{
@@ -76,14 +74,14 @@ config := &doris.Config{
 	Password:    "password", 
 	Database:    "test_db",
 	Table:       "users",
-	Format:      doris.DefaultJSONFormat(), // JSON Lines 格式
+	Format:      doris.DefaultJSONFormat(), // JSON Lines format
 	Retry:       doris.DefaultRetry(),
 	GroupCommit: doris.ASYNC,
 }
 
 client, _ := doris.NewLoadClient(config)
 
-// JSON Lines 数据
+// JSON Lines data
 jsonData := `{"id":1,"name":"Alice","age":25}
 {"id":2,"name":"Bob","age":30}
 {"id":3,"name":"Charlie","age":35}`
@@ -91,25 +89,25 @@ jsonData := `{"id":1,"name":"Alice","age":25}
 response, err := client.Load(doris.StringReader(jsonData))
 ```
 
-## 🛠️ 配置详解
+## 🛠️ Configuration Guide
 
-### 基础配置
+### Basic Configuration
 
 ```go
 config := &doris.Config{
-	// 必需字段
+	// Required fields
 	Endpoints: []string{
 		"http://fe1:8630",
-		"http://fe2:8630",    // 支持多 FE 节点，自动负载均衡
+		"http://fe2:8630",    // Multiple FE nodes supported, auto load balancing
 	},
 	User:     "your_username",
 	Password: "your_password",
 	Database: "your_database",
 	Table:    "your_table",
 	
-	// 可选字段
-	LabelPrefix: "my_app",           // 标签前缀
-	Label:       "custom_label_001", // 自定义标签
+	// Optional fields
+	LabelPrefix: "my_app",           // Label prefix
+	Label:       "custom_label_001", // Custom label
 	Format:      doris.DefaultCSVFormat(),
 	Retry:       doris.DefaultRetry(),
 	GroupCommit: doris.ASYNC,
@@ -121,71 +119,71 @@ config := &doris.Config{
 }
 ```
 
-### 数据格式配置
+### Data Format Configuration
 
 ```go
-// 1. 使用默认格式（推荐）
+// 1. Use default formats (recommended)
 Format: doris.DefaultJSONFormat()  // JSON Lines, read_json_by_line=true
-Format: doris.DefaultCSVFormat()   // CSV, 逗号分隔，换行符分割
+Format: doris.DefaultCSVFormat()   // CSV, comma separated, newline delimiter
 
-// 2. 自定义 JSON 格式
+// 2. Custom JSON format
 Format: &doris.JSONFormat{Type: doris.JSONObjectLine}  // JSON Lines
 Format: &doris.JSONFormat{Type: doris.JSONArray}       // JSON Array
 
-// 3. 自定义 CSV 格式  
+// 3. Custom CSV format
 Format: &doris.CSVFormat{
-	ColumnSeparator: "|",     // 管道符分隔
-	LineDelimiter:   "\n",    // 换行符
+	ColumnSeparator: "|",     // Pipe separator
+	LineDelimiter:   "\n",    // Newline delimiter
 }
 ```
 
-### 重试策略配置
+### Retry Strategy Configuration
 
 ```go
-// 1. 使用默认重试（推荐）
-Retry: doris.DefaultRetry()  // 6次重试，总时长60秒
-// 重试间隔: [1s, 2s, 4s, 8s, 16s, 32s]
+// 1. Use default retry (recommended)
+Retry: doris.DefaultRetry()  // 6 retries, 60 seconds total
+// Retry intervals: [1s, 2s, 4s, 8s, 16s, 32s]
 
-// 2. 自定义重试
+// 2. Custom retry
 Retry: &doris.Retry{
-	MaxRetryTimes:  3,      // 最大重试次数
-	BaseIntervalMs: 2000,   // 基础间隔 2 秒
-	MaxTotalTimeMs: 30000,  // 总时长限制 30 秒
+	MaxRetryTimes:  3,      // Maximum retry times
+	BaseIntervalMs: 2000,   // Base interval 2 seconds
+	MaxTotalTimeMs: 30000,  // Total time limit 30 seconds
 }
 
-// 3. 禁用重试
+// 3. Disable retry
 Retry: nil
 ```
 
-### Group Commit 模式
+### Group Commit Mode
 
 ```go
-GroupCommit: doris.ASYNC,  // 异步模式，最高吞吐量
-GroupCommit: doris.SYNC,   // 同步模式，立即可见
-GroupCommit: doris.OFF,    // 关闭，使用传统模式
+GroupCommit: doris.ASYNC,  // Async mode, highest throughput
+GroupCommit: doris.SYNC,   // Sync mode, immediately visible
+GroupCommit: doris.OFF,    // Off, use traditional mode
 ```
 
-> ⚠️ **注意**: 启用 Group Commit 时，所有 Label 配置会被自动忽略并记录警告日志。
+> ⚠️ **Note**: When Group Commit is enabled, all Label configurations are automatically ignored and warning logs are recorded.
 
-## 🔄 并发使用
+## 🔄 Concurrent Usage
 
-### 基础并发示例
+### Basic Concurrency Example
 
 ```go
 func worker(id int, client *doris.DorisLoadClient, wg *sync.WaitGroup) {
 	defer wg.Done()
 	
-	// ✅ 每个 worker 使用独立的数据
+	// ✅ Each worker uses independent data
 	data := fmt.Sprintf("%d,Worker_%d,Data", id, id)
 	
 	response, err := client.Load(doris.StringReader(data))
 	if err != nil {
-		fmt.Printf("Worker %d 失败: %v\n", id, err)
+		fmt.Printf("Worker %d failed: %v\n", id, err)
 		return
 	}
 	
 	if response.Status == doris.SUCCESS {
-		fmt.Printf("✅ Worker %d 成功加载 %d 行\n", id, response.Resp.NumberLoadedRows)
+		fmt.Printf("✅ Worker %d successfully loaded %d rows\n", id, response.Resp.NumberLoadedRows)
 	}
 }
 
@@ -193,7 +191,7 @@ func main() {
 	client, _ := doris.NewLoadClient(config)
 	
 	var wg sync.WaitGroup
-	// 🚀 启动 10 个并发 worker
+	// 🚀 Launch 10 concurrent workers
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go worker(i, client, &wg)
@@ -202,88 +200,88 @@ func main() {
 }
 ```
 
-### ⚠️ 并发安全要点
+### ⚠️ Thread Safety Notes
 
-- ✅ **DorisLoadClient 是线程安全的** - 可以在多个 goroutine 间共享
-- ❌ **Reader 不应该共享** - 每个 goroutine 应使用独立的数据源
+- ✅ **DorisLoadClient is thread-safe** - Can be shared across multiple goroutines
+- ❌ **Readers should not be shared** - Each goroutine should use independent data sources
 
 ```go
-// ✅ 正确的并发模式
+// ✅ Correct concurrent pattern
 for i := 0; i < numWorkers; i++ {
 	go func(workerID int) {
-		data := generateWorkerData(workerID)  // 独立数据
+		data := generateWorkerData(workerID)  // Independent data
 		response, err := client.Load(doris.StringReader(data))
 	}(i)
 }
 
-// ❌ 错误的并发模式 - 不要这样做！
+// ❌ Wrong concurrent pattern - Don't do this!
 file, _ := os.Open("data.csv")
 for i := 0; i < 10; i++ {
 	go func() {
-		client.Load(file)  // ❌ 多个 goroutine 共享同一个 Reader
+		client.Load(file)  // ❌ Multiple goroutines sharing same Reader
 	}()
 }
 ```
 
-## 📊 响应处理
+## 📊 Response Handling
 
 ```go
 response, err := client.Load(data)
 
-// 1. 检查系统级错误
+// 1. Check system-level errors
 if err != nil {
-	fmt.Printf("系统错误: %v\n", err)
+	fmt.Printf("System error: %v\n", err)
 	return
 }
 
-// 2. 检查加载状态
+// 2. Check load status
 switch response.Status {
 case doris.SUCCESS:
-	fmt.Printf("✅ 加载成功！\n")
-	fmt.Printf("📊 统计信息:\n")
-	fmt.Printf("  - 加载行数: %d\n", response.Resp.NumberLoadedRows)
-	fmt.Printf("  - 加载字节: %d\n", response.Resp.LoadBytes)
-	fmt.Printf("  - 耗时: %d ms\n", response.Resp.LoadTimeMs)
-	fmt.Printf("  - 标签: %s\n", response.Resp.Label)
+	fmt.Printf("✅ Load successful!\n")
+	fmt.Printf("📊 Statistics:\n")
+	fmt.Printf("  - Loaded rows: %d\n", response.Resp.NumberLoadedRows)
+	fmt.Printf("  - Loaded bytes: %d\n", response.Resp.LoadBytes)
+	fmt.Printf("  - Time: %d ms\n", response.Resp.LoadTimeMs)
+	fmt.Printf("  - Label: %s\n", response.Resp.Label)
 	
 case doris.FAILURE:
-	fmt.Printf("❌ 加载失败: %s\n", response.ErrorMessage)
+	fmt.Printf("❌ Load failed: %s\n", response.ErrorMessage)
 	
-	// 获取详细错误信息
+	// Get detailed error information
 	if response.Resp.ErrorURL != "" {
-		fmt.Printf("🔍 错误详情: %s\n", response.Resp.ErrorURL)
+		fmt.Printf("🔍 Error details: %s\n", response.Resp.ErrorURL)
 	}
 }
 ```
 
-## 🔍 日志控制
+## 🔍 Log Control
 
-### 基础日志配置
+### Basic Log Configuration
 
 ```go
-// 设置日志级别
-doris.SetLogLevel(doris.LogLevelInfo)   // 生产环境推荐
-doris.SetLogLevel(doris.LogLevelDebug)  // 开发调试
-doris.SetLogLevel(doris.LogLevelError)  // 只显示错误
+// Set log level
+doris.SetLogLevel(doris.LogLevelInfo)   // Recommended for production
+doris.SetLogLevel(doris.LogLevelDebug)  // For development debugging
+doris.SetLogLevel(doris.LogLevelError)  // Only show errors
 
-// 禁用所有日志
+// Disable all logs
 doris.DisableLogging()
 
-// 输出到文件
+// Output to file
 file, _ := os.OpenFile("doris.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 doris.SetLogOutput(file)
 ```
 
-### 并发场景日志
+### Concurrent Scenario Logging
 
 ```go
-// 为每个 worker 创建上下文日志器
+// Create context logger for each worker
 logger := doris.NewContextLogger("Worker-1")
-logger.Infof("开始处理批次 %d", batchID)
-logger.Warnf("检测到重试，尝试次数: %d", retryCount)
+logger.Infof("Starting batch %d", batchID)
+logger.Warnf("Retry detected, attempt: %d", retryCount)
 ```
 
-### 集成第三方日志库
+### Integrate Third-party Logging Libraries
 
 ```go
 import "github.com/sirupsen/logrus"
@@ -291,68 +289,70 @@ import "github.com/sirupsen/logrus"
 logger := logrus.New()
 logger.SetLevel(logrus.InfoLevel)
 
-// 集成到 Doris SDK
+// Integrate with Doris SDK
 doris.SetCustomLogFuncs(
-	logger.Debugf,  // Debug 级别
-	logger.Infof,   // Info 级别  
-	logger.Warnf,   // Warn 级别
-	logger.Errorf,  // Error 级别
+	logger.Debugf,  // Debug level
+	logger.Infof,   // Info level
+	logger.Warnf,   // Warn level
+	logger.Errorf,  // Error level
 )
 ```
 
-## 📈 生产级示例
+## 📈 Production Examples
 
-我们提供了完整的生产级示例
+We provide complete production-level examples:
 
 ```bash
-# 运行所有示例
+# Run all examples
 go run cmd/examples/main.go all
 
-# 单个示例
-go run cmd/examples/main.go single      # 大批量加载 (10万条)
-go run cmd/examples/main.go concurrent  # 并发加载 (100万条, 10 workers)  
-go run cmd/examples/main.go json        # JSON 加载 (5万条)
-go run cmd/examples/main.go basic       # 基础并发 (5 workers)
+# Individual examples
+go run cmd/examples/main.go single       # Large batch load (100k records)
+go run cmd/examples/main.go concurrent   # Concurrent load (1M records, 10 workers)
+go run cmd/examples/main.go json         # JSON load (50k records)
+go run cmd/examples/main.go basic        # Basic concurrency (5 workers)
 ```
 
-## 🛠️ 实用工具
+## 🛠️ Utility Tools
 
-### 数据转换助手
+### Data Conversion Helpers
 
 ```go
-// 字符串转 Reader
+// String to Reader
 reader := doris.StringReader("1,Alice,25\n2,Bob,30")
 
-// 字节数组转 Reader  
+// Byte array to Reader
 data := []byte("1,Alice,25\n2,Bob,30")
 reader := doris.BytesReader(data)
 
-// 结构体转 JSON Reader
+// Struct to JSON Reader
 users := []User{{ID: 1, Name: "Alice"}}
 reader, err := doris.JSONReader(users)
 ```
 
-### 默认配置构建器
+### Default Configuration Builders
 
 ```go
-// 快速创建常用配置
-retry := doris.DefaultRetry()        // 6次重试，60秒总时长
-jsonFormat := doris.DefaultJSONFormat() // JSON Lines 格式
-csvFormat := doris.DefaultCSVFormat()   // 标准 CSV 格式
+// Quick create common configurations
+retry := doris.DefaultRetry()           // 6 retries, 60 seconds total
+jsonFormat := doris.DefaultJSONFormat() // JSON Lines format
+csvFormat := doris.DefaultCSVFormat()   // Standard CSV format
 
-// 自定义配置
-customRetry := doris.NewRetry(3, 1000) // 3次重试，1秒基础间隔
+// Custom configuration
+customRetry := doris.NewRetry(3, 1000) // 3 retries, 1 second base interval
 ```
 
-## 📚 文档和示例
+## 📚 Documentation and Examples
 
-- 📖 [API 迁移指南](docs/API_MIGRATION_GUIDE.md) - 从旧 API 升级指南
-- 🧵 [线程安全分析](docs/THREAD_SAFETY_ANALYSIS.md) - 详细的并发安全说明
-- 🔍 [Reader 并发分析](docs/READER_CONCURRENCY_ANALYSIS.md) - Reader 使用最佳实践
-- 📝 [示例详解](examples/README.md) - 所有示例的详细说明
+- 📖 [API Migration Guide](docs/API_MIGRATION_GUIDE.md) - Guide for upgrading from old API
+- 🧵 [Thread Safety Analysis](docs/THREAD_SAFETY_ANALYSIS.md) - Detailed concurrency safety documentation
+- 🔍 [Reader Concurrency Analysis](docs/READER_CONCURRENCY_ANALYSIS.md) - Reader usage best practices
+- 📝 [Example Details](examples/README.md) - Detailed explanation of all examples
 
+## 🤝 Contributing
 
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 许可证
+## 🙏 Acknowledgments
 
-本项目采用 [Apache License 2.0](LICENSE) 许可证。
+Maintained by the Apache Doris core contributor team.

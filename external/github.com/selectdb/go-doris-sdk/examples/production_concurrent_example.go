@@ -16,9 +16,9 @@ import (
 
 const (
 	// Production-level concurrent configuration
-	TOTAL_RECORDS      = 1000000                     // 100万条记录
-	NUM_WORKERS        = 10                          // 10个并发线程
-	RECORDS_PER_WORKER = TOTAL_RECORDS / NUM_WORKERS // 每个线程10万条
+	TOTAL_RECORDS      = 1000000                     // 1 million records
+	NUM_WORKERS        = 10                          // 10 concurrent workers
+	RECORDS_PER_WORKER = TOTAL_RECORDS / NUM_WORKERS // 100k records per worker
 )
 
 // WorkerStats holds statistics for each worker
@@ -50,7 +50,7 @@ func RunConcurrentExample() {
 	config := &doris.Config{
 		Endpoints:   []string{"http://10.16.10.6:8630"},
 		User:        "root",
-		Password:    "123456",
+		Password:    "",
 		Database:    "test",
 		Table:       "orders", // Unified orders table
 		LabelPrefix: "prod_concurrent",

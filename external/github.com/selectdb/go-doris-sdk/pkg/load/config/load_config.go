@@ -108,11 +108,6 @@ func (c *Config) ValidateInternal() error {
 		return fmt.Errorf("user cannot be empty")
 	}
 
-	// Allow empty password - Doris default root user has no password
-	// if c.Password == "" {
-	// 	return fmt.Errorf("password cannot be empty")
-	// }
-
 	if c.Database == "" {
 		return fmt.Errorf("database cannot be empty")
 	}

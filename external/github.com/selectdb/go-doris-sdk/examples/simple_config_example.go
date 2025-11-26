@@ -8,15 +8,15 @@ import (
 )
 
 func SimpleConfigExample() {
-	// 直接构建 Config 结构体，使用新的默认函数
+	// Directly construct Config struct using new default functions
 	config := &doris.Config{
 		Endpoints:   []string{"http://10.16.10.6:8630"},
 		User:        "root",
 		Password:    "password",
 		Database:    "test_db",
 		Table:       "test_table",
-		Format:      doris.DefaultJSONFormat(), // 使用新的默认 JSON 格式
-		Retry:       doris.DefaultRetry(),      // 使用新的默认重试策略
+		Format:      doris.DefaultJSONFormat(), // Use new default JSON format
+		Retry:       doris.DefaultRetry(),      // Use new default retry strategy
 		GroupCommit: doris.ASYNC,
 		Options: map[string]string{
 			"strict_mode":      "true",
@@ -24,19 +24,19 @@ func SimpleConfigExample() {
 		},
 	}
 
-	// 创建客户端
+	// Create client
 	client, err := doris.NewLoadClient(config)
 	if err != nil {
 		fmt.Printf("Failed to create client: %v\n", err)
 		return
 	}
 
-	// 准备数据
+	// Prepare data
 	jsonData := `{"id": 1, "name": "Alice", "age": 30}
 {"id": 2, "name": "Bob", "age": 25}
 {"id": 3, "name": "Charlie", "age": 35}`
 
-	// 执行加载
+	// Execute load
 	response, err := client.Load(strings.NewReader(jsonData))
 	if err != nil {
 		fmt.Printf("Load failed: %v\n", err)

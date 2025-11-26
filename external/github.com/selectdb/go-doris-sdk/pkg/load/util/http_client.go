@@ -22,9 +22,9 @@ func GetHttpClient() *http.Client {
 func buildHttpClient() *http.Client {
 
 	transport := &http.Transport{
-		MaxIdleConnsPerHost: 30, // 每个主机保持的空闲连接数，用于连接复用以减少建立连接的开销
-		MaxConnsPerHost:     50, // 每个主机的最大总连接数(活跃+空闲)，控制并发数量，超出会排队等待
-		MaxIdleConns:        50, // 全局最大空闲连接数
+		MaxIdleConnsPerHost: 30, // Maximum idle connections per host for connection reuse to reduce overhead
+		MaxConnsPerHost:     50, // Maximum total connections (active + idle) per host, controls concurrency, excess will queue
+		MaxIdleConns:        50, // Global maximum idle connections
 
 		// TLS configuration for Doris HTTP endpoints
 		TLSClientConfig: &tls.Config{

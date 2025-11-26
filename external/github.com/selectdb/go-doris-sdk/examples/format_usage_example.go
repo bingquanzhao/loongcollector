@@ -8,35 +8,35 @@ import (
 
 // FormatUsageExample demonstrates how to use Format interface
 func FormatUsageExample() {
-	fmt.Println("=== Format Interface 使用示例 ===")
+	fmt.Println("=== Format Interface Usage Example ===")
 
-	// 方法1: 直接构建 JSONFormat（推荐）
+	// Method 1: Direct JSONFormat construction (recommended)
 	jsonConfig := &doris.Config{
 		Endpoints: []string{"http://localhost:8630"},
 		User:      "root",
 		Password:  "password",
 		Database:  "example_db",
 		Table:     "example_table",
-		// 直接构建 JSONFormat 结构体
+		// Direct JSONFormat struct construction
 		Format: &doris.JSONFormat{
-			Type: doris.JSONObjectLine, // 或 doris.JSONArray
+			Type: doris.JSONObjectLine, // or doris.JSONArray
 		},
 		Retry: &doris.Retry{
 			MaxRetryTimes:  3,
 			BaseIntervalMs: 1000,
-			MaxTotalTimeMs: 60000, // 添加总时长限制
+			MaxTotalTimeMs: 60000, // Add total time limit
 		},
 		GroupCommit: doris.ASYNC,
 	}
 
-	// 方法2: 直接构建 CSVFormat（推荐）
+	// Method 2: Direct CSVFormat construction (recommended)
 	csvConfig := &doris.Config{
 		Endpoints: []string{"http://localhost:8630"},
 		User:      "root",
 		Password:  "password",
 		Database:  "example_db",
 		Table:     "example_table",
-		// 直接构建 CSVFormat 结构体
+		// Direct CSVFormat struct construction
 		Format: &doris.CSVFormat{
 			ColumnSeparator: ",",
 			LineDelimiter:   "\n",
@@ -44,28 +44,28 @@ func FormatUsageExample() {
 		Retry: &doris.Retry{
 			MaxRetryTimes:  5,
 			BaseIntervalMs: 2000,
-			MaxTotalTimeMs: 60000, // 添加总时长限制
+			MaxTotalTimeMs: 60000, // Add total time limit
 		},
 		GroupCommit: doris.SYNC,
 	}
 
-	// 方法3: 自定义格式配置
+	// Method 3: Custom format configuration
 	customConfig := &doris.Config{
 		Endpoints: []string{"http://localhost:8630"},
 		User:      "root",
 		Password:  "password",
 		Database:  "example_db",
 		Table:     "example_table",
-		// 自定义 CSV 分隔符
+		// Custom CSV separator
 		Format: &doris.CSVFormat{
-			ColumnSeparator: "|",   // 管道符分隔
-			LineDelimiter:   "\\n", // 自定义换行符
+			ColumnSeparator: "|",   // Pipe separator
+			LineDelimiter:   "\\n", // Custom line delimiter
 		},
 		Retry:       doris.DefaultRetry(),
 		GroupCommit: doris.OFF,
 	}
 
-	// 演示 Format interface 的使用
+	// Demonstrate Format interface usage
 	configs := []*doris.Config{jsonConfig, csvConfig, customConfig}
 	configNames := []string{"JSON Config", "CSV Config", "Custom CSV Config"}
 
@@ -74,13 +74,13 @@ func FormatUsageExample() {
 		fmt.Printf("Format Type: %s\n", config.Format.GetFormatType())
 		fmt.Printf("Format Options: %v\n", config.Format.GetOptions())
 
-		// 验证配置
+		// Validate configuration
 		if err := config.ValidateInternal(); err != nil {
 			fmt.Printf("Validation Error: %v\n", err)
 			continue
 		}
 
-		// 创建客户端
+		// Create client
 		client, err := doris.NewLoadClient(config)
 		if err != nil {
 			fmt.Printf("Client Creation Error: %v\n", err)
@@ -89,7 +89,7 @@ func FormatUsageExample() {
 
 		fmt.Printf("Client created successfully for %s\n", config.Format.GetFormatType())
 
-		// 模拟数据加载
+		// Simulate data loading
 		var sampleData string
 		if config.Format.GetFormatType() == "json" {
 			sampleData = `{"id": 1, "name": "Alice"}
@@ -101,10 +101,10 @@ func FormatUsageExample() {
 
 		fmt.Printf("Sample data for %s format:\n%s\n", config.Format.GetFormatType(), sampleData)
 
-		// 注意：这里只是演示，实际使用时需要真实的 Doris 服务器
+		// Note: This is just a demonstration, actual use requires a real Doris server
 		_ = client
 		_ = sampleData
 	}
 
-	fmt.Println("\n=== 示例完成 ===")
+	fmt.Println("\n=== Example Complete ===")
 }
